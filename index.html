@@ -184,6 +184,17 @@ body {
   padding: 3px 10px;
   border: 1px solid var(--border);
 }
+.ai-badge {
+  font: 700 10px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #ffffff;
+  background: var(--ink);
+  padding: 3px 8px;
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+}
 .item-date {
   font-size: 11px;
   color: var(--mute);
@@ -255,6 +266,16 @@ body {
   transition: border-color .15s, color .15s;
 }
 .act-ghost:hover { border-color: var(--ink); color: var(--ink); }
+.act-ai {
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.act-ai:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
 .act-danger { }
 .act-danger:hover { border-color: var(--accent); color: var(--accent); }
 
@@ -394,11 +415,54 @@ function add({ url, title = '', note = '' }) {
   if (dup) { toast('Already saved!'); return dup.id; }
   const it = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
-    url, title: title.trim(), note, tag: '', done: false, ts: Date.now()
+    url, title: title.trim(), note, tag: '', done: false, ts: Date.now(), ai: false
   };
   items.unshift(it);
   store();
+  
+  // Auto-summarize with Gemini AI if no manual note was provided
+  if (!note) {
+    fetchAISummary(it.id);
+  }
   return it.id;
+}
+
+/* ─── GEMINI AI SUMMARIZER ─── */
+async function fetchAISummary(id) {
+  const it = items.find(i => i.id === id);
+  if (!it) return;
+
+  const card = document.querySelector(`[data-id="${id}"]`);
+  const textarea = card?.querySelector('.item-note');
+  if (textarea && !it.note) {
+    textarea.placeholder = "✨ Generating 1-sentence AI summary...";
+  }
+
+  try {
+    const res = await fetch('/api/summarize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: it.url, title: it.title })
+    });
+
+    if (!res.ok) {
+      if (textarea && !it.note) textarea.placeholder = "Why did you save this?";
+      return;
+    }
+
+    const data = await res.json();
+    if (data.summary) {
+      it.note = data.summary;
+      if (data.tag && !it.tag) it.tag = data.tag;
+      if (data.title && (!it.title || it.title === it.url)) it.title = data.title;
+      it.ai = true;
+      store();
+      render();
+      toast('✨ AI summary generated!');
+    }
+  } catch (err) {
+    if (textarea && !it.note) textarea.placeholder = "Why did you save this?";
+  }
 }
 
 /* ─── SHARE TARGET HANDLER ─── */
@@ -452,7 +516,10 @@ function render() {
   $('list').innerHTML = shown.map(i => `
     <div class="item ${i.done ? 'done' : ''}" data-id="${i.id}">
       <div class="item-meta">
-        <span class="src-badge">${esc(source(i.url))}</span>
+        <div>
+          <span class="src-badge">${esc(source(i.url))}</span>
+          ${i.ai ? '<span class="ai-badge">✨ AI Note</span>' : ''}
+        </div>
         <span class="item-date">${new Date(i.ts).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'})}</span>
       </div>
       <div class="item-title">
@@ -463,6 +530,7 @@ function render() {
       <textarea class="item-note" placeholder="Why did you save this?" data-f="note" data-id="${i.id}">${esc(i.note)}</textarea>
       <div class="item-actions">
         <input class="item-tag" placeholder="Add tag (e.g. exam prep)" value="${esc(i.tag)}" data-f="tag" data-id="${i.id}">
+        <button class="act-ghost act-ai" data-a="ai" data-id="${i.id}" title="Generate 1-sentence AI summary">✨ AI Note</button>
         <button class="act-primary" data-a="done" data-id="${i.id}">${i.done ? 'Move back' : 'Mark done'}</button>
         <button class="act-ghost" data-a="copy" data-id="${i.id}">Copy</button>
         <button class="act-ghost act-danger" data-a="del" data-id="${i.id}">Delete</button>
@@ -506,7 +574,7 @@ $('exportBtn').addEventListener('click', async () => {
   }
 });
 
-// Delegated: actions (done / delete / copy)
+// Delegated: actions (done / delete / copy / ai)
 $('list').addEventListener('click', async e => {
   const a = e.target.dataset.a;
   if (!a) return;
@@ -514,6 +582,10 @@ $('list').addEventListener('click', async e => {
   const it = items.find(i => i.id === id);
   if (!it) return;
 
+  if (a === 'ai') {
+    toast('✨ Consulting Gemini AI...');
+    fetchAISummary(id);
+  }
   if (a === 'done') { it.done = !it.done; store(); render(); }
   if (a === 'del' && confirm('Delete this saved item?')) {
     items = items.filter(i => i !== it); store(); render();
