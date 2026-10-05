@@ -95,12 +95,12 @@ Return strictly a valid JSON object matching this schema:
     const candidateModels = [
       'gemini-2.5-flash',
       'gemini-flash-latest',
-      'gemini-3-flash-preview',
-      'gemini-pro-latest'
+      'gemini-2.5-flash-lite',
+      'gemini-3.5-flash'
     ];
 
     let geminiRes = null;
-    let lastError = '';
+    let allErrors = [];
 
     for (const model of candidateModels) {
       try {
@@ -122,15 +122,16 @@ Return strictly a valid JSON object matching this schema:
           geminiRes = resp;
           break;
         } else {
-          lastError = await resp.text();
+          const errBody = await resp.text();
+          allErrors.push({ model, status: resp.status, err: errBody });
         }
       } catch (callErr) {
-        lastError = callErr.message;
+        allErrors.push({ model, err: callErr.message });
       }
     }
 
     if (!geminiRes) {
-      return res.status(502).json({ error: 'Gemini API failed across all candidate models', details: lastError });
+      return res.status(502).json({ error: 'Gemini API failed across all candidate models', allErrors });
     }
 
     const geminiData = await geminiRes.json();
