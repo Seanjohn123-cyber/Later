@@ -116,7 +116,7 @@ body {
 .search-input::placeholder { color: #bbb; }
 
 /* ─── TABS ─── */
-.tabs-row { display: flex; margin-bottom: 20px; border: 2px solid var(--ink); width: fit-content; }
+.tabs-row { display: flex; border: 2px solid var(--ink); width: fit-content; }
 .tab {
   padding: 10px 20px;
   background: transparent;
@@ -131,20 +131,7 @@ body {
 }
 .tab:last-of-type { border-right: none; }
 .tab.on { background: var(--ink); color: var(--bg); }
-.export-btn {
-  margin-left: 12px;
-  padding: 10px 16px;
-  background: transparent;
-  border: 2px solid var(--border);
-  color: var(--mute);
-  font: 600 11px var(--font-hd);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  cursor: pointer;
-  align-self: center;
-  transition: border-color .15s, color .15s;
-}
-.export-btn:hover { border-color: var(--ink); color: var(--ink); }
+.tab-export:hover { background: var(--border); color: var(--ink); }
 
 /* ─── BANNER ─── */
 .banner {
@@ -357,12 +344,10 @@ body.offline .offline-bar { display: block; }
          placeholder="Search your saved items…" aria-label="Search saved items">
 
   <!-- TABS + EXPORT -->
-  <div style="display:flex;align-items:center;margin-bottom:20px;">
-    <div class="tabs-row">
-      <button id="tabTodo" class="tab on">To check</button>
-      <button id="tabDone" class="tab">Done</button>
-    </div>
-    <button id="exportBtn" class="export-btn">Export all</button>
+  <div class="tabs-row" style="margin-bottom:20px;">
+    <button id="tabTodo" class="tab on">To check</button>
+    <button id="tabDone" class="tab">Done</button>
+    <button id="exportBtn" class="tab tab-export">Export</button>
   </div>
 
   <!-- BANNER -->
