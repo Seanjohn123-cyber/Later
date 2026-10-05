@@ -11,7 +11,6 @@
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
-  /* Load Space Grotesk Bold (700) — only weight we use for headings */
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap');
 </style>
 <style>
@@ -42,17 +41,59 @@ body {
   min-height: 100dvh;
 }
 
+/* ─── CLIPBOARD AUTO-DETECT POPUP BANNER ─── */
+.clip-prompt {
+  background: var(--ink);
+  color: #fff;
+  border-bottom: 3px solid var(--accent);
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  animation: slideDown .25s ease-out;
+}
+@keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+.clip-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.clip-tag { font: 700 10px var(--font-hd); color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; }
+.clip-url { font-size: 13px; color: #eee; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clip-btns { display: flex; gap: 8px; align-items: center; }
+.clip-btn-save {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  font: 700 11px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.clip-btn-dismiss {
+  background: transparent;
+  color: #888;
+  border: none;
+  font-size: 16px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.clip-btn-dismiss:hover { color: #fff; }
+
 /* ─── LAYOUT ─── */
 .shell { max-width: 520px; margin: 0 auto; padding: 0 20px 80px; }
 
 /* ─── HEADER ─── */
-.header { padding: 44px 0 28px; border-bottom: 2px solid var(--ink); margin-bottom: 28px; }
-.accent-rule { width: 40px; height: 4px; background: var(--accent); margin-bottom: 20px; }
+.header { padding: 36px 0 24px; border-bottom: 2px solid var(--ink); margin-bottom: 24px; }
+.accent-rule { width: 40px; height: 4px; background: var(--accent); margin-bottom: 16px; }
 .wordmark {
   font-family: var(--font-hd);
-  font-size: clamp(64px, 18vw, 88px);
+  font-size: clamp(56px, 16vw, 84px);
   font-weight: 700;
-  letter-spacing: -6px;
+  letter-spacing: -5px;
   line-height: 0.95;
   text-transform: uppercase;
 }
@@ -63,7 +104,7 @@ body {
   color: var(--mute);
   text-transform: uppercase;
   letter-spacing: 2px;
-  margin-top: 14px;
+  margin-top: 12px;
   font-weight: 500;
 }
 
@@ -109,16 +150,16 @@ body {
   color: var(--ink);
   outline: none;
   border-radius: 0;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   transition: border-color .15s;
 }
 .search-input:focus { border-color: var(--ink); }
 .search-input::placeholder { color: #bbb; }
 
 /* ─── TABS ─── */
-.tabs-row { display: flex; border: 2px solid var(--ink); width: fit-content; }
+.tabs-row { display: flex; border: 2px solid var(--ink); width: fit-content; margin-bottom: 20px; }
 .tab {
-  padding: 10px 20px;
+  padding: 10px 18px;
   background: transparent;
   border: none;
   border-right: 2px solid var(--ink);
@@ -150,11 +191,11 @@ body {
   border: 2px solid var(--ink);
   border-left: 6px solid var(--accent);
   padding: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   transition: border-left-color .15s;
 }
 .item:hover { border-left-color: var(--ink); }
-.item.done { border-left-color: var(--ok); opacity: .65; }
+.item.done { border-left-color: var(--ok); opacity: .7; }
 
 .item-meta {
   display: flex;
@@ -196,27 +237,64 @@ body {
 }
 .item-title a:hover { color: var(--accent); }
 
+/* ─── PROMINENT AI NOTE CALLOUT ─── */
+.ai-callout {
+  background: var(--bg);
+  border: 2px solid var(--ink);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.ai-callout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.ai-callout-label {
+  font: 700 11px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+}
+.ai-callout-edit {
+  font: 600 11px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: transparent;
+  border: none;
+  color: var(--mute);
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.ai-callout-edit:hover { color: var(--ink); text-decoration: underline; }
+.ai-callout-text {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #111;
+  font-weight: 500;
+}
+
 .item-note {
   width: 100%;
   background: var(--bg);
   border: 2px solid var(--border);
   padding: 10px 12px;
   font: 14px var(--font-bd);
-  color: #555;
+  color: #222;
   resize: vertical;
-  min-height: 42px;
+  min-height: 48px;
   margin-bottom: 10px;
   outline: none;
   border-radius: 0;
   transition: border-color .15s;
 }
 .item-note:focus { border-color: var(--ink); }
-.item-note::placeholder { color: #ccc; font-style: italic; }
+.item-note::placeholder { color: #aaa; font-style: italic; }
 
 .item-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .item-tag {
   flex: 1;
-  min-width: 100px;
+  min-width: 90px;
   background: var(--bg);
   border: 2px solid var(--border);
   padding: 8px 12px;
@@ -263,8 +341,91 @@ body {
   color: #fff;
   border-color: var(--accent);
 }
-.act-danger { }
 .act-danger:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── VAULT STYLES ─── */
+.vault-panel {
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  padding: 24px 20px;
+  margin-top: 10px;
+}
+.vault-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+.vault-title {
+  font: 700 20px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.vault-pin-box {
+  max-width: 320px;
+  margin: 20px auto;
+  text-align: center;
+}
+.vault-pin-input {
+  width: 100%;
+  font-size: 28px;
+  letter-spacing: 12px;
+  text-align: center;
+  border: 2px solid var(--ink);
+  padding: 10px;
+  margin: 14px 0;
+  outline: none;
+  background: var(--bg);
+}
+.vault-card {
+  border: 2px solid var(--ink);
+  background: var(--bg);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.vault-card-title {
+  font: 700 16px var(--font-hd);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+.vault-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+.vault-btn-copy {
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  font: 700 10px var(--font-hd);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.vault-btn-copy:hover { border-color: var(--ink); }
+.vault-form {
+  background: var(--bg);
+  border: 2px dashed var(--ink);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.vault-form input {
+  width: 100%;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  outline: none;
+}
+.vault-form input:focus { border-color: var(--ink); }
 
 /* ─── EMPTY STATE ─── */
 .empty {
@@ -302,7 +463,6 @@ body {
 }
 .toast.show { opacity: 1; }
 
-/* ─── OFFLINE BANNER ─── */
 .offline-bar {
   background: var(--ink);
   color: var(--bg);
@@ -320,6 +480,18 @@ body.offline .offline-bar { display: block; }
 
 <div class="offline-bar">— Offline — All your saves are available locally —</div>
 
+<!-- CLIPBOARD AUTO-DETECT PROMPT -->
+<div id="clipPrompt" class="clip-prompt" style="display:none;">
+  <div class="clip-info">
+    <span class="clip-tag">📋 Copied Link Detected</span>
+    <span id="clipUrlText" class="clip-url"></span>
+  </div>
+  <div class="clip-btns">
+    <button id="clipSaveBtn" class="clip-btn-save">Save & Summarize →</button>
+    <button id="clipDismissBtn" class="clip-btn-dismiss" title="Dismiss">✕</button>
+  </div>
+</div>
+
 <div class="shell">
 
   <!-- HEADER -->
@@ -329,11 +501,11 @@ body.offline .offline-bar { display: block; }
     <p class="tagline">Save now. Check it when you're ready.</p>
   </header>
 
-  <!-- ADD SECTION -->
-  <section class="add-section">
+  <!-- ADD SECTION (Hidden when in Vault) -->
+  <section id="addSection" class="add-section">
     <div class="input-row">
       <input id="urlInput" class="url-input" type="url" inputmode="url"
-             placeholder="Paste a YouTube, Facebook, TikTok link…"
+             placeholder="Paste any social media or web link…"
              aria-label="Paste a link to save">
       <button id="addBtn" class="btn-save">Save →</button>
     </div>
@@ -343,18 +515,24 @@ body.offline .offline-bar { display: block; }
   <input id="searchInput" class="search-input" type="search"
          placeholder="Search your saved items…" aria-label="Search saved items">
 
-  <!-- TABS + EXPORT -->
-  <div class="tabs-row" style="margin-bottom:20px;">
+  <!-- TABS: TO CHECK | DONE | VAULT | EXPORT -->
+  <div class="tabs-row">
     <button id="tabTodo" class="tab on">To check</button>
     <button id="tabDone" class="tab">Done</button>
+    <button id="tabVault" class="tab">Vault 🔒</button>
     <button id="exportBtn" class="tab tab-export">Export</button>
   </div>
 
   <!-- BANNER -->
   <div id="banner"></div>
 
-  <!-- LIST -->
-  <div id="list"></div>
+  <!-- BOOKMARK LIST VIEW -->
+  <div id="listView">
+    <div id="list"></div>
+  </div>
+
+  <!-- PASSWORD VAULT VIEW -->
+  <div id="vaultView" style="display:none;"></div>
 
 </div><!-- /shell -->
 
@@ -363,7 +541,18 @@ body.offline .offline-bar { display: block; }
 <script>
 /* ─── STATE ─── */
 const KEY = 'later-items-v1';
-let items = [], view = 'todo', q = '';
+const VAULT_KEY = 'later-vault-v1';
+const PIN_HASH_KEY = 'later-vault-pin-hash';
+
+let items = [];
+let view = 'todo'; // 'todo' | 'done' | 'vault'
+let q = '';
+let activeClipUrl = '';
+
+// Vault state (in-memory only when unlocked)
+let vaultUnlocked = false;
+let vaultPIN = '';
+let vaultData = [];
 
 /* ─── UTILS ─── */
 const $ = id => document.getElementById(id);
@@ -371,18 +560,22 @@ const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; }
 const store = () => { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch {} };
 const esc = s => String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
+/* ─── PLATFORM IDENTIFIER (ALL SOCIAL MEDIA) ─── */
 function source(u) {
   try {
-    const h = new URL(u).hostname.replace(/^(www\.|m\.)/, '');
+    const h = new URL(u).hostname.replace(/^(www\.|m\.)/, '').toLowerCase();
     if (/youtube\.com|youtu\.be/.test(h)) return 'YouTube';
-    if (/facebook\.com|fb\.watch|fb\.com/.test(h)) return 'Facebook';
     if (/instagram\.com/.test(h)) return 'Instagram';
     if (/tiktok\.com/.test(h)) return 'TikTok';
+    if (/facebook\.com|fb\.watch|fb\.com/.test(h)) return 'Facebook';
     if (/x\.com|twitter\.com/.test(h)) return 'X / Twitter';
-    if (/linkedin\.com/.test(h)) return 'LinkedIn';
+    if (/threads\.net/.test(h)) return 'Threads';
     if (/reddit\.com/.test(h)) return 'Reddit';
-    if (/medium\.com/.test(h)) return 'Medium';
-    return h;
+    if (/linkedin\.com/.test(h)) return 'LinkedIn';
+    if (/pinterest\.com/.test(h)) return 'Pinterest';
+    if (/github\.com/.test(h)) return 'GitHub';
+    if (/medium\.com|substack\.com/.test(h)) return 'Article';
+    return h.split('.')[0].toUpperCase();
   } catch { return 'Link'; }
 }
 
@@ -390,10 +583,54 @@ function toast(msg) {
   const t = $('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1900);
+  setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-/* ─── DATA ─── */
+/* ─── CLIPBOARD AUTO-DETECTION ─── */
+let lastCheckedClip = '';
+async function checkClipboard() {
+  if (!navigator.clipboard || !navigator.clipboard.readText) return;
+  try {
+    const text = await navigator.clipboard.readText();
+    if (!text || text === lastCheckedClip) return;
+    const match = text.trim().match(/https?:\/\/\S+/);
+    if (match) {
+      const url = match[0];
+      const exists = items.some(i => i.url === url);
+      if (!exists && url !== activeClipUrl) {
+        lastCheckedClip = text;
+        activeClipUrl = url;
+        $('clipUrlText').textContent = url;
+        $('clipPrompt').style.display = 'flex';
+      }
+    }
+  } catch (e) {
+    // Clipboard permission not granted or browser window inactive
+  }
+}
+
+$('clipSaveBtn').addEventListener('click', () => {
+  if (activeClipUrl) {
+    add({ url: activeClipUrl });
+    toast('Saved to Later ✓');
+    $('clipPrompt').style.display = 'none';
+    activeClipUrl = '';
+    view = 'todo';
+    render();
+  }
+});
+
+$('clipDismissBtn').addEventListener('click', () => {
+  $('clipPrompt').style.display = 'none';
+  activeClipUrl = '';
+});
+
+window.addEventListener('focus', checkClipboard);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') checkClipboard();
+});
+
+/* ─── ADD & GEMINI AI ─── */
 function add({ url, title = '', note = '' }) {
   if (!url) return null;
   const dup = items.find(i => i.url === url);
@@ -405,14 +642,12 @@ function add({ url, title = '', note = '' }) {
   items.unshift(it);
   store();
   
-  // Auto-summarize with Gemini AI if no manual note was provided
   if (!note) {
     fetchAISummary(it.id);
   }
   return it.id;
 }
 
-/* ─── GEMINI AI SUMMARIZER ─── */
 async function fetchAISummary(id) {
   const it = items.find(i => i.id === id);
   if (!it) return;
@@ -443,7 +678,7 @@ async function fetchAISummary(id) {
       it.ai = true;
       store();
       render();
-      toast('✨ AI summary generated!');
+      toast('✨ AI Note Generated!');
     }
   } catch (err) {
     if (textarea && !it.note) textarea.placeholder = "Why did you save this?";
@@ -469,19 +704,85 @@ function captureShare() {
   }
 }
 
+/* ─── SIMPLE ENCRYPTION FOR PASSWORD VAULT (PBKDF2 + AES-GCM) ─── */
+async function deriveKey(pin, salt) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(pin), 'PBKDF2', false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+async function encryptVault(data, pin) {
+  const enc = new TextEncoder();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(pin, salt);
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    enc.encode(JSON.stringify(data))
+  );
+  return {
+    salt: Array.from(salt),
+    iv: Array.from(iv),
+    data: Array.from(new Uint8Array(ciphertext))
+  };
+}
+
+async function decryptVault(encrypted, pin) {
+  const dec = new TextDecoder();
+  const salt = new Uint8Array(encrypted.salt);
+  const iv = new Uint8Array(encrypted.iv);
+  const key = await deriveKey(pin, salt);
+  const decrypted = await crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    new Uint8Array(encrypted.data)
+  );
+  return JSON.parse(dec.decode(decrypted));
+}
+
+async function hashPin(pin) {
+  const enc = new TextEncoder();
+  const hash = await crypto.subtle.digest('SHA-256', enc.encode(pin + '_later_salt_2026'));
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
 /* ─── RENDER ─── */
 function render() {
-  // banner
+  $('tabTodo').classList.toggle('on', view === 'todo');
+  $('tabDone').classList.toggle('on', view === 'done');
+  $('tabVault').classList.toggle('on', view === 'vault');
+
+  if (view === 'vault') {
+    $('addSection').style.display = 'none';
+    $('searchInput').style.display = 'none';
+    $('banner').style.display = 'none';
+    $('listView').style.display = 'none';
+    $('vaultView').style.display = 'block';
+    renderVault();
+    return;
+  }
+
+  // Bookmarks view
+  $('addSection').style.display = 'block';
+  $('searchInput').style.display = 'block';
+  $('banner').style.display = 'block';
+  $('listView').style.display = 'block';
+  $('vaultView').style.display = 'none';
+
   const pending = items.filter(i => !i.done);
   $('banner').innerHTML = pending.length
     ? `<div class="banner">— ${pending.length} item${pending.length > 1 ? 's' : ''} waiting to be checked</div>`
     : '';
 
-  // tabs
-  $('tabTodo').classList.toggle('on', view === 'todo');
-  $('tabDone').classList.toggle('on', view === 'done');
-
-  // filter
   const shown = items.filter(i =>
     i.done === (view === 'done') &&
     `${i.title} ${i.note} ${i.tag} ${i.url}`.toLowerCase().includes(q)
@@ -512,7 +813,21 @@ function render() {
           ${esc(i.title || i.url)}
         </a>
       </div>
-      <textarea class="item-note" placeholder="Why did you save this?" data-f="note" data-id="${i.id}">${esc(i.note)}</textarea>
+
+      <!-- PROMINENT NOTE CALLOUT -->
+      ${i.note ? `
+        <div class="ai-callout">
+          <div class="ai-callout-header">
+            <span class="ai-callout-label">💡 KEY TAKEAWAY</span>
+            <button class="ai-callout-edit" data-a="editnote" data-id="${i.id}">Edit</button>
+          </div>
+          <p class="ai-callout-text">${esc(i.note)}</p>
+        </div>
+        <textarea class="item-note edit-mode" style="display:none;" data-f="note" data-id="${i.id}">${esc(i.note)}</textarea>
+      ` : `
+        <textarea class="item-note" placeholder="Why did you save this? (Tap ✨ AI Note to generate)" data-f="note" data-id="${i.id}"></textarea>
+      `}
+
       <div class="item-actions">
         <input class="item-tag" placeholder="Add tag (e.g. exam prep)" value="${esc(i.tag)}" data-f="tag" data-id="${i.id}">
         <button class="act-ghost act-ai" data-a="ai" data-id="${i.id}" title="Generate 1-sentence AI summary">✨ AI Note</button>
@@ -522,6 +837,179 @@ function render() {
       </div>
     </div>
   `).join('');
+}
+
+/* ─── RENDER VAULT ─── */
+function renderVault() {
+  const savedHash = localStorage.getItem(PIN_HASH_KEY);
+
+  // Screen 1: Set up new PIN
+  if (!savedHash) {
+    $('vaultView').innerHTML = `
+      <div class="vault-panel">
+        <div class="vault-title" style="text-align:center;margin-bottom:12px;">🔐 Setup Password Vault</div>
+        <p style="font-size:13px;color:var(--mute);text-align:center;">Create a 4-digit Master PIN to securely encrypt passwords locally on this device.</p>
+        <div class="vault-pin-box">
+          <input id="newPinInput" type="password" maxlength="4" pattern="[0-9]*" inputmode="numeric" class="vault-pin-input" placeholder="••••">
+          <button id="savePinBtn" class="act-primary" style="width:100%;padding:12px;">Create Master PIN →</button>
+        </div>
+      </div>
+    `;
+    $('savePinBtn').onclick = async () => {
+      const pin = $('newPinInput').value.trim();
+      if (pin.length !== 4) return toast('PIN must be 4 digits');
+      const hash = await hashPin(pin);
+      localStorage.setItem(PIN_HASH_KEY, hash);
+      vaultPIN = pin;
+      vaultUnlocked = true;
+      vaultData = [];
+      toast('Vault initialized!');
+      renderVault();
+    };
+    return;
+  }
+
+  // Screen 2: Locked -> Enter PIN
+  if (!vaultUnlocked) {
+    $('vaultView').innerHTML = `
+      <div class="vault-panel">
+        <div class="vault-title" style="text-align:center;margin-bottom:12px;">🔒 Vault Locked</div>
+        <p style="font-size:13px;color:var(--mute);text-align:center;">Enter your 4-digit PIN to access your passwords.</p>
+        <div class="vault-pin-box">
+          <input id="unlockPinInput" type="password" maxlength="4" pattern="[0-9]*" inputmode="numeric" class="vault-pin-input" placeholder="••••" autofocus>
+          <button id="unlockPinBtn" class="act-primary" style="width:100%;padding:12px;">Unlock Vault 🔓</button>
+        </div>
+      </div>
+    `;
+    $('unlockPinBtn').onclick = async () => {
+      const pin = $('unlockPinInput').value.trim();
+      const hash = await hashPin(pin);
+      if (hash !== savedHash) {
+        toast('Incorrect PIN');
+        $('unlockPinInput').value = '';
+        return;
+      }
+      vaultPIN = pin;
+      try {
+        const stored = localStorage.getItem(VAULT_KEY);
+        vaultData = stored ? await decryptVault(JSON.parse(stored), pin) : [];
+      } catch (e) {
+        vaultData = [];
+      }
+      vaultUnlocked = true;
+      toast('Vault unlocked!');
+      renderVault();
+    };
+    return;
+  }
+
+  // Screen 3: Unlocked -> Passwords List
+  $('vaultView').innerHTML = `
+    <div class="vault-panel">
+      <div class="vault-header">
+        <span class="vault-title">🔐 Password Vault</span>
+        <button id="lockVaultBtn" class="act-ghost" style="padding:6px 12px;font-size:11px;">🔒 Lock</button>
+      </div>
+
+      <!-- Add New Credential Form -->
+      <div class="vault-form">
+        <div style="font:700 12px var(--font-hd);text-transform:uppercase;margin-bottom:10px;">+ Save New Website Password</div>
+        <input id="vSite" placeholder="Website / Service (e.g. Netflix, Stanford, Gmail)">
+        <input id="vUser" placeholder="Username or Email">
+        <div style="display:flex;gap:6px;">
+          <input id="vPass" type="password" placeholder="Password" style="flex:1;">
+          <button id="vGenBtn" class="act-ghost" title="Generate strong password" style="margin-bottom:8px;padding:0 12px;">🎲 Gen</button>
+        </div>
+        <button id="vSaveBtn" class="act-primary" style="width:100%;padding:10px;">Save Credential to Vault</button>
+      </div>
+
+      <!-- Saved Passwords List -->
+      <div id="vaultList">
+        ${vaultData.length ? vaultData.map((item, idx) => `
+          <div class="vault-card">
+            <div class="vault-card-title">
+              <span>${esc(item.site)}</span>
+              <button class="act-ghost act-danger" data-va="del" data-vidx="${idx}" style="padding:2px 8px;font-size:10px;">Delete</button>
+            </div>
+            <div class="vault-field">
+              <span>👤 ${esc(item.user)}</span>
+              <button class="vault-btn-copy" data-va="copyuser" data-vidx="${idx}">Copy User</button>
+            </div>
+            <div class="vault-field">
+              <span id="passSpan_${idx}">••••••••</span>
+              <div style="display:flex;gap:4px;">
+                <button class="vault-btn-copy" data-va="peek" data-vidx="${idx}">Eye 👁</button>
+                <button class="vault-btn-copy" data-va="copypass" data-vidx="${idx}">Copy Pass</button>
+              </div>
+            </div>
+          </div>
+        `).join('') : '<div class="empty"><p>No saved passwords yet.<br>Add your first credential above.</p></div>'}
+      </div>
+    </div>
+  `;
+
+  $('lockVaultBtn').onclick = () => {
+    vaultUnlocked = false;
+    vaultPIN = '';
+    vaultData = [];
+    toast('Vault locked 🔒');
+    renderVault();
+  };
+
+  $('vGenBtn').onclick = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*';
+    let p = '';
+    for (let i = 0; i < 14; i++) p += chars[Math.floor(Math.random() * chars.length)];
+    $('vPass').value = p;
+    $('vPass').type = 'text';
+    toast('Strong password generated!');
+  };
+
+  $('vSaveBtn').onclick = async () => {
+    const site = $('vSite').value.trim();
+    const user = $('vUser').value.trim();
+    const pass = $('vPass').value.trim();
+    if (!site || !pass) return toast('Site and Password are required');
+    vaultData.unshift({ id: Date.now().toString(36), site, user, pass });
+    const encrypted = await encryptVault(vaultData, vaultPIN);
+    localStorage.setItem(VAULT_KEY, JSON.stringify(encrypted));
+    toast('Password encrypted and saved ✓');
+    renderVault();
+  };
+
+  // Delegated vault list actions
+  $('vaultList').onclick = async (e) => {
+    const va = e.target.dataset.va;
+    const idx = e.target.dataset.vidx;
+    if (!va || idx === undefined) return;
+    const it = vaultData[idx];
+
+    if (va === 'copyuser') {
+      await navigator.clipboard.writeText(it.user);
+      toast('Username copied!');
+    }
+    if (va === 'copypass') {
+      await navigator.clipboard.writeText(it.pass);
+      toast('Password copied!');
+    }
+    if (va === 'peek') {
+      const span = $(`passSpan_${idx}`);
+      if (span.textContent === '••••••••') {
+        span.textContent = it.pass;
+        e.target.textContent = 'Hide';
+      } else {
+        span.textContent = '••••••••';
+        e.target.textContent = 'Eye 👁';
+      }
+    }
+    if (va === 'del' && confirm(`Delete credentials for ${it.site}?`)) {
+      vaultData.splice(idx, 1);
+      const encrypted = await encryptVault(vaultData, vaultPIN);
+      localStorage.setItem(VAULT_KEY, JSON.stringify(encrypted));
+      renderVault();
+      toast('Deleted');
+    }
+  };
 }
 
 /* ─── EVENTS ─── */
@@ -546,6 +1034,7 @@ $('searchInput').addEventListener('input', e => {
 
 $('tabTodo').addEventListener('click', () => { view = 'todo'; render(); });
 $('tabDone').addEventListener('click', () => { view = 'done'; render(); });
+$('tabVault').addEventListener('click', () => { view = 'vault'; render(); });
 
 $('exportBtn').addEventListener('click', async () => {
   const txt = items.map(i =>
@@ -559,7 +1048,7 @@ $('exportBtn').addEventListener('click', async () => {
   }
 });
 
-// Delegated: actions (done / delete / copy / ai)
+// Delegated: actions (done / delete / copy / ai / editnote)
 $('list').addEventListener('click', async e => {
   const a = e.target.dataset.a;
   if (!a) return;
@@ -570,6 +1059,16 @@ $('list').addEventListener('click', async e => {
   if (a === 'ai') {
     toast('✨ Consulting Gemini AI...');
     fetchAISummary(id);
+  }
+  if (a === 'editnote') {
+    const card = e.target.closest('.item');
+    const callout = card.querySelector('.ai-callout');
+    const textarea = card.querySelector('.item-note.edit-mode');
+    if (callout && textarea) {
+      callout.style.display = 'none';
+      textarea.style.display = 'block';
+      textarea.focus();
+    }
   }
   if (a === 'done') { it.done = !it.done; store(); render(); }
   if (a === 'del' && confirm('Delete this saved item?')) {
@@ -599,6 +1098,7 @@ if (!navigator.onLine) document.body.classList.add('offline');
 items = load();
 captureShare();
 render();
+checkClipboard();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
