@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Later.</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f7f5ef">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+  /* Load Space Grotesk Bold (700) — only weight we use for headings */
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap');
+</style>
+<style>
+/* ─── TOKENS ─── */
+:root {
+  --bg:       #f7f5ef;
+  --surface:  #ffffff;
+  --ink:      #0d0d0d;
+  --mute:     #888888;
+  --border:   #e0ddd5;
+  --accent:   #ff3d00;
+  --ok:       #00c853;
+  --font-hd:  'Space Grotesk', 'Arial Black', 'Franklin Gothic Medium', Arial, sans-serif;
+  --font-bd:  'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+/* ─── RESET ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+input, textarea, button { font: inherit; color: inherit; }
+a { color: inherit; text-decoration: none; }
+
+/* ─── BASE ─── */
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 var(--font-bd);
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  min-height: 100dvh;
+}
+
+/* ─── LAYOUT ─── */
+.shell { max-width: 520px; margin: 0 auto; padding: 0 20px 80px; }
+
+/* ─── HEADER ─── */
+.header { padding: 44px 0 28px; border-bottom: 2px solid var(--ink); margin-bottom: 28px; }
+.accent-rule { width: 40px; height: 4px; background: var(--accent); margin-bottom: 20px; }
+.wordmark {
+  font-family: var(--font-hd);
+  font-size: clamp(64px, 18vw, 88px);
+  font-weight: 700;
+  letter-spacing: -6px;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+.wordmark .dot { color: var(--accent); }
+.tagline {
+  font-family: var(--font-bd);
+  font-size: 13px;
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 14px;
+  font-weight: 500;
+}
+
+/* ─── ADD SECTION ─── */
+.add-section { margin-bottom: 16px; }
+.input-row { display: flex; gap: 0; }
+.url-input {
+  flex: 1;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-right: none;
+  padding: 14px 16px;
+  font: 15px var(--font-bd);
+  color: var(--ink);
+  outline: none;
+  border-radius: 0;
+  transition: border-color .15s;
+}
+.url-input:focus { border-color: var(--accent); }
+.url-input::placeholder { color: #bbb; font-size: 14px; }
+.btn-save {
+  background: var(--ink);
+  color: var(--bg);
+  border: 2px solid var(--ink);
+  padding: 14px 22px;
+  font: 700 14px var(--font-hd);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+  border-radius: 0;
+}
+.btn-save:hover, .btn-save:active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ─── SEARCH ─── */
+.search-input {
+  width: 100%;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  padding: 12px 16px;
+  font: 14px var(--font-bd);
+  color: var(--ink);
+  outline: none;
+  border-radius: 0;
+  margin-bottom: 20px;
+  transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--ink); }
+.search-input::placeholder { color: #bbb; }
+
+/* ─── TABS ─── */
+.tabs-row { display: flex; margin-bottom: 20px; border: 2px solid var(--ink); width: fit-content; }
+.tab {
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  border-right: 2px solid var(--ink);
+  color: var(--mute);
+  font: 700 12px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.tab:last-of-type { border-right: none; }
+.tab.on { background: var(--ink); color: var(--bg); }
+.export-btn {
+  margin-left: 12px;
+  padding: 10px 16px;
+  background: transparent;
+  border: 2px solid var(--border);
+  color: var(--mute);
+  font: 600 11px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  align-self: center;
+  transition: border-color .15s, color .15s;
+}
+.export-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ─── BANNER ─── */
+.banner {
+  background: var(--accent);
+  color: #fff;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font: 700 13px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+/* ─── ITEM CARD ─── */
+.item {
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-left: 6px solid var(--accent);
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: border-left-color .15s;
+}
+.item:hover { border-left-color: var(--ink); }
+.item.done { border-left-color: var(--ok); opacity: .65; }
+
+.item-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.src-badge {
+  font: 700 11px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--mute);
+  background: var(--bg);
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+}
+.item-date {
+  font-size: 11px;
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.item-title {
+  font: 700 16px var(--font-hd);
+  line-height: 1.3;
+  margin-bottom: 12px;
+  word-break: break-word;
+}
+.item-title a:hover { color: var(--accent); }
+
+.item-note {
+  width: 100%;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  padding: 10px 12px;
+  font: 14px var(--font-bd);
+  color: #555;
+  resize: vertical;
+  min-height: 42px;
+  margin-bottom: 10px;
+  outline: none;
+  border-radius: 0;
+  transition: border-color .15s;
+}
+.item-note:focus { border-color: var(--ink); }
+.item-note::placeholder { color: #ccc; font-style: italic; }
+
+.item-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.item-tag {
+  flex: 1;
+  min-width: 100px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  padding: 8px 12px;
+  font: 13px var(--font-bd);
+  color: var(--ink);
+  outline: none;
+  border-radius: 0;
+  transition: border-color .15s;
+}
+.item-tag:focus { border-color: var(--ink); }
+.item-tag::placeholder { color: #bbb; }
+
+.act-primary {
+  padding: 8px 16px;
+  background: var(--ink);
+  color: var(--bg);
+  border: 2px solid var(--ink);
+  font: 700 12px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.act-primary:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.act-ghost {
+  padding: 8px 12px;
+  background: transparent;
+  border: 2px solid var(--border);
+  color: var(--mute);
+  font: 600 12px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.act-ghost:hover { border-color: var(--ink); color: var(--ink); }
+.act-danger { }
+.act-danger:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── EMPTY STATE ─── */
+.empty {
+  text-align: center;
+  padding: 56px 16px;
+  border: 2px dashed var(--border);
+  margin-top: 8px;
+}
+.empty-icon { font-size: 36px; margin-bottom: 12px; }
+.empty p {
+  font: 700 13px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--mute);
+  line-height: 1.7;
+}
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 12px 22px;
+  font: 700 13px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  opacity: 0;
+  transition: opacity .2s;
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+
+/* ─── OFFLINE BANNER ─── */
+.offline-bar {
+  background: var(--ink);
+  color: var(--bg);
+  text-align: center;
+  padding: 8px;
+  font: 700 11px var(--font-hd);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: none;
+}
+body.offline .offline-bar { display: block; }
+</style>
+</head>
+<body>
+
+<div class="offline-bar">— Offline — All your saves are available locally —</div>
+
+<div class="shell">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="accent-rule"></div>
+    <div class="wordmark">Later<span class="dot">.</span></div>
+    <p class="tagline">Save now. Check it when you're ready.</p>
+  </header>
+
+  <!-- ADD SECTION -->
+  <section class="add-section">
+    <div class="input-row">
+      <input id="urlInput" class="url-input" type="url" inputmode="url"
+             placeholder="Paste a YouTube, Facebook, TikTok link…"
+             aria-label="Paste a link to save">
+      <button id="addBtn" class="btn-save">Save →</button>
+    </div>
+  </section>
+
+  <!-- SEARCH -->
+  <input id="searchInput" class="search-input" type="search"
+         placeholder="Search your saved items…" aria-label="Search saved items">
+
+  <!-- TABS + EXPORT -->
+  <div style="display:flex;align-items:center;margin-bottom:20px;">
+    <div class="tabs-row">
+      <button id="tabTodo" class="tab on">To check</button>
+      <button id="tabDone" class="tab">Done</button>
+    </div>
+    <button id="exportBtn" class="export-btn">Export all</button>
+  </div>
+
+  <!-- BANNER -->
+  <div id="banner"></div>
+
+  <!-- LIST -->
+  <div id="list"></div>
+
+</div><!-- /shell -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─── STATE ─── */
+const KEY = 'later-items-v1';
+let items = [], view = 'todo', q = '';
+
+/* ─── UTILS ─── */
+const $ = id => document.getElementById(id);
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
+const store = () => { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch {} };
+const esc = s => String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function source(u) {
+  try {
+    const h = new URL(u).hostname.replace(/^(www\.|m\.)/, '');
+    if (/youtube\.com|youtu\.be/.test(h)) return 'YouTube';
+    if (/facebook\.com|fb\.watch|fb\.com/.test(h)) return 'Facebook';
+    if (/instagram\.com/.test(h)) return 'Instagram';
+    if (/tiktok\.com/.test(h)) return 'TikTok';
+    if (/x\.com|twitter\.com/.test(h)) return 'X / Twitter';
+    if (/linkedin\.com/.test(h)) return 'LinkedIn';
+    if (/reddit\.com/.test(h)) return 'Reddit';
+    if (/medium\.com/.test(h)) return 'Medium';
+    return h;
+  } catch { return 'Link'; }
+}
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1900);
+}
+
+/* ─── DATA ─── */
+function add({ url, title = '', note = '' }) {
+  if (!url) return null;
+  const dup = items.find(i => i.url === url);
+  if (dup) { toast('Already saved!'); return dup.id; }
+  const it = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    url, title: title.trim(), note, tag: '', done: false, ts: Date.now()
+  };
+  items.unshift(it);
+  store();
+  return it.id;
+}
+
+/* ─── SHARE TARGET HANDLER ─── */
+function captureShare() {
+  const p = new URLSearchParams(location.search);
+  const hasShare = [...p.keys()].some(k => ['url', 'text', 'title'].includes(k));
+  if (!hasShare) return;
+  const text = p.get('text') || '';
+  const rawUrl = p.get('url') || text;
+  const match = rawUrl.match(/https?:\/\/\S+/);
+  const url = match ? match[0] : '';
+  const title = (p.get('title') || text.replace(url, '')).trim();
+  history.replaceState(null, '', location.pathname);
+  if (url) {
+    add({ url, title });
+    toast('Saved to Later ✓');
+  } else {
+    toast('No link found in share');
+  }
+}
+
+/* ─── RENDER ─── */
+function render() {
+  // banner
+  const pending = items.filter(i => !i.done);
+  $('banner').innerHTML = pending.length
+    ? `<div class="banner">— ${pending.length} item${pending.length > 1 ? 's' : ''} waiting to be checked</div>`
+    : '';
+
+  // tabs
+  $('tabTodo').classList.toggle('on', view === 'todo');
+  $('tabDone').classList.toggle('on', view === 'done');
+
+  // filter
+  const shown = items.filter(i =>
+    i.done === (view === 'done') &&
+    `${i.title} ${i.note} ${i.tag} ${i.url}`.toLowerCase().includes(q)
+  );
+
+  if (!shown.length) {
+    $('list').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">${view === 'todo' ? '📋' : '✅'}</div>
+        <p>${view === 'todo'
+          ? 'Nothing saved yet.\nTap Share on any post\nand pick Later.'
+          : 'Nothing marked done yet.'}</p>
+      </div>`;
+    return;
+  }
+
+  $('list').innerHTML = shown.map(i => `
+    <div class="item ${i.done ? 'done' : ''}" data-id="${i.id}">
+      <div class="item-meta">
+        <span class="src-badge">${esc(source(i.url))}</span>
+        <span class="item-date">${new Date(i.ts).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'})}</span>
+      </div>
+      <div class="item-title">
+        <a href="${esc(i.url)}" target="_blank" rel="noopener noreferrer">
+          ${esc(i.title || i.url)}
+        </a>
+      </div>
+      <textarea class="item-note" placeholder="Why did you save this?" data-f="note" data-id="${i.id}">${esc(i.note)}</textarea>
+      <div class="item-actions">
+        <input class="item-tag" placeholder="Add tag (e.g. exam prep)" value="${esc(i.tag)}" data-f="tag" data-id="${i.id}">
+        <button class="act-primary" data-a="done" data-id="${i.id}">${i.done ? 'Move back' : 'Mark done'}</button>
+        <button class="act-ghost" data-a="copy" data-id="${i.id}">Copy</button>
+        <button class="act-ghost act-danger" data-a="del" data-id="${i.id}">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ─── EVENTS ─── */
+$('addBtn').addEventListener('click', () => {
+  const u = $('urlInput').value.trim();
+  if (!u) return toast('Paste a link first');
+  if (!/^https?:\/\//.test(u)) return toast('Must start with https://');
+  add({ url: u });
+  $('urlInput').value = '';
+  view = 'todo';
+  render();
+});
+
+$('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') $('addBtn').click();
+});
+
+$('searchInput').addEventListener('input', e => {
+  q = e.target.value.toLowerCase();
+  render();
+});
+
+$('tabTodo').addEventListener('click', () => { view = 'todo'; render(); });
+$('tabDone').addEventListener('click', () => { view = 'done'; render(); });
+
+$('exportBtn').addEventListener('click', async () => {
+  const txt = items.map(i =>
+    `${i.title || '(no title)'}\n${i.url}${i.note ? '\nNote: ' + i.note : ''}${i.tag ? '\nTag: ' + i.tag : ''}`
+  ).join('\n\n');
+  try {
+    await navigator.clipboard.writeText(txt);
+    toast('All items copied to clipboard');
+  } catch {
+    toast('Copy failed — try again');
+  }
+});
+
+// Delegated: actions (done / delete / copy)
+$('list').addEventListener('click', async e => {
+  const a = e.target.dataset.a;
+  if (!a) return;
+  const id = e.target.dataset.id;
+  const it = items.find(i => i.id === id);
+  if (!it) return;
+
+  if (a === 'done') { it.done = !it.done; store(); render(); }
+  if (a === 'del' && confirm('Delete this saved item?')) {
+    items = items.filter(i => i !== it); store(); render();
+  }
+  if (a === 'copy') {
+    try { await navigator.clipboard.writeText(it.url); toast('Link copied!'); }
+    catch { toast('Copy failed'); }
+  }
+});
+
+// Delegated: field edits (note / tag)
+$('list').addEventListener('change', e => {
+  const f = e.target.dataset.f;
+  if (!f) return;
+  const id = e.target.dataset.id;
+  const it = items.find(i => i.id === id);
+  if (it) { it[f] = e.target.value; store(); }
+});
+
+// Offline indicator
+window.addEventListener('online',  () => document.body.classList.remove('offline'));
+window.addEventListener('offline', () => document.body.classList.add('offline'));
+if (!navigator.onLine) document.body.classList.add('offline');
+
+/* ─── BOOT ─── */
+items = load();
+captureShare();
+render();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
