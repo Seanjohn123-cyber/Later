@@ -9,8 +9,23 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
+  if (req.method === 'GET') {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY not set' });
+    try {
+      const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+      const listData = await listRes.json();
+      return res.status(200).json({ 
+        keyConfigured: true, 
+        models: (listData.models || []).map(m => m.name) 
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed. Use POST.' });
+    return res.status(405).json({ error: 'Method not allowed.' });
   }
 
   try {
@@ -58,7 +73,7 @@ export default async function handler(req, res) {
       // Metadata enrichment is non-blocking; proceed to Gemini with URL
     }
 
-    // Step 2: Call Google Gemini API to generate concise 1-sentence study note
+    // Step 2: Call Google Gemini API
     const prompt = `You are the AI engine for "Later.", an intelligent reading and video study-list app.
 A student saved this link to check later.
 URL: ${url}
@@ -67,7 +82,7 @@ Description: ${metaDescription || 'None'}
 
 TASK:
 1. Write ONE punchy, high-signal takeaway sentence (maximum 20-25 words) explaining why this post or video is valuable to study or review.
-2. Suggest ONE short lowercase category tag (e.g. coding, business, math, design, physics, career, productivity, psychology).
+2. Suggest ONE short lowercase category tag (e.g. coding, business, math, design, physics, career, productivity, psychology, news).
 3. If the title is generic or missing, provide a clean, readable title for the post.
 
 Return strictly a valid JSON object matching this schema:
@@ -77,37 +92,47 @@ Return strictly a valid JSON object matching this schema:
   "tag": "singletag"
 }`;
 
-    // Try gemini-2.0-flash first, fallback to gemini-1.5-flash
-    let geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-    let geminiPayload = {
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        responseMimeType: "application/json",
-        temperature: 0.2
+    const candidateModels = [
+      'gemini-1.5-flash-latest',
+      'gemini-1.5-flash',
+      'gemini-2.0-flash-exp',
+      'gemini-1.5-pro-latest',
+      'gemini-1.5-pro',
+      'gemini-pro'
+    ];
+
+    let geminiRes = null;
+    let lastError = '';
+
+    for (const model of candidateModels) {
+      try {
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const resp = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              responseMimeType: "application/json",
+              temperature: 0.2
+            }
+          }),
+          signal: AbortSignal.timeout(7000)
+        });
+
+        if (resp.ok) {
+          geminiRes = resp;
+          break;
+        } else {
+          lastError = await resp.text();
+        }
+      } catch (callErr) {
+        lastError = callErr.message;
       }
-    };
-
-    let geminiRes = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(geminiPayload),
-      signal: AbortSignal.timeout(8000)
-    });
-
-    if (!geminiRes.ok) {
-      // Fallback to gemini-1.5-flash
-      geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-      geminiRes = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(geminiPayload),
-        signal: AbortSignal.timeout(8000)
-      });
     }
 
-    if (!geminiRes.ok) {
-      const errText = await geminiRes.text();
-      return res.status(502).json({ error: 'Gemini API failed', details: errText });
+    if (!geminiRes) {
+      return res.status(502).json({ error: 'Gemini API failed across all candidate models', details: lastError });
     }
 
     const geminiData = await geminiRes.json();
