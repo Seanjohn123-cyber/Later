@@ -93,10 +93,10 @@ Return strictly a valid JSON object matching this schema:
 }`;
 
     const candidateModels = [
-      'gemini-2.5-flash',
-      'gemini-flash-latest',
-      'gemini-2.5-flash-lite',
-      'gemini-3.5-flash'
+      'gemini-3.8-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-3.5-flash',
+      'gemini-3.1-flash-lite'
     ];
 
     let geminiRes = null;
@@ -115,7 +115,7 @@ Return strictly a valid JSON object matching this schema:
               temperature: 0.2
             }
           }),
-          signal: AbortSignal.timeout(7000)
+          signal: AbortSignal.timeout(12000)
         });
 
         if (resp.ok) {
